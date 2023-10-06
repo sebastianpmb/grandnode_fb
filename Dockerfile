@@ -5,9 +5,6 @@ WORKDIR /app
 # Copy and build
 COPY ./src /app
 
-COPY Tools/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 ARG GIT_COMMIT
 ARG GIT_BRANCH
 
@@ -43,5 +40,7 @@ EXPOSE 8090
 ENV ASPNETCORE_URLS http://+:8090
 WORKDIR /app
 COPY --from=build-env /app/build/release .
+COPY Tools/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["dotnet", "Grand.Web.dll"]
