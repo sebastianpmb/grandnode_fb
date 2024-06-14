@@ -1,4 +1,5 @@
-﻿@inject IWorkContext workContext
+﻿
+@inject IWorkContext workContext
 @inject Grand.Business.Core.Interfaces.Common.Security.IPermissionService permissionService
 @inject CustomerSettings customerSettings
 @inject LanguageSettings languageSettings
@@ -155,15 +156,20 @@
                                 }
                                 <li>
                                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                        <img src="@(Common.WwwRoot)/administration/build/images/avatar.png" alt="">
-
-                                        @if (currentCustomer != null && await groupService.IsRegistered(currentCustomer))
+                                        @if (currentCustomer != null && await groupService.IsVendor(currentCustomer))
                                         {
+                                            
                                             <div class="username-hide-on-mobile">
                                                 @(usernamesEnabled ? currentCustomer.Username : currentCustomer.Email)
                                             </div>
-
-                                        }
+                                        } else if (currentCustomer != null && await groupService.IsRegistered(currentCustomer))
+                                        {
+                                            <img src="@(Common.WwwRoot)/administration/build/images/avatar.png" alt="">
+                                            <div class="username-hide-on-mobile">
+                                                @(usernamesEnabled ? currentCustomer.Username : currentCustomer.Email)
+                                            </div>
+                                        } 
+                            
                                         <span class="fa fa-angle-down"></span>
                                     </a>
 

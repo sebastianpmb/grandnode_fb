@@ -2,10 +2,16 @@
 @using Grand.Web.Common.Menu
 @using Grand.Business.Core.Interfaces.System.Admin
 @inject IPermissionService permissionService
+@inject IWorkContext workContext
 @inject IAdminSiteMapService adminSiteMapService
 @inject IEnumerable<IAdminMenuProvider> _adminMenuProviders
+@inject Grand.Business.Core.Interfaces.Common.Directory.IGroupService groupService
+@inject Grand.Business.Core.Interfaces.Storage.IPictureService pictureService
+@inject Grand.Business.Core.Interfaces.Customers.IVendorService vendorService
+
 @{
     //load sitemap
+    var currentCustomer = workContext.CurrentCustomer;
     var siteMap = new SiteMap(adminSiteMapService, permissionService);
     await siteMap.Load();
 }
@@ -17,7 +23,26 @@
 <div class="col-md-3 left_col">
     <div class="left_col scroll-view">
         <div class="navbar nav_title">
-            <a href="~/Admin" class="site_title"><img src="@(Common.WwwRoot)/administration/build/images/fanbaseLogo.jpeg" width="35" height="35" /> <span>GrandNode</span></a>
+            @{
+                var vendor = await vendorService.GetVendorById(currentCustomer.VendorId);
+                var pictureURL = "";
+                @if (vendor != null) {
+                var vendorPicture = await pictureService.GetPictureById(vendor.PictureId);
+                pictureURL = await pictureService.GetPictureUrl(vendorPicture);
+                }
+
+
+            }
+            <a href="~/Admin" class="site_title">
+            @if (currentCustomer != null && await groupService.IsVendor(currentCustomer) && pictureURL != null)
+            {
+               <img src="@(pictureURL)" width="50" height="50" /> 
+            } else if (currentCustomer != null && await groupService.IsRegistered(currentCustomer))
+            {
+            <img src="@(Common.WwwRoot)/administration/build/images/fanbaseLogo.jpeg" width="50" height="50" /> 
+            } 
+            <span>GrandNode</span>
+            </a>
         </div>
         <div class="clearfix"></div>
         <div class="main_menu_side hidden-print main_menu" id="sidebar-menu">
