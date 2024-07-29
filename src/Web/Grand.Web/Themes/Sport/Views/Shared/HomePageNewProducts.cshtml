@@ -1,0 +1,15 @@
+﻿<div id="hpnslider" class="main-slider bottom-shadow row">
+    @await Component.InvokeAsync("PageBlock", new { systemName = "newproductsbackground" })
+    <template v-if="hpnslider.Model !== null || typeof(hpnslider.Model) == 'object'">
+        <swiper ref="HomePageNewProducts"
+                :options="hpnslider.swiperOptions">
+            <swiper-slide class="slide-wide" v-for="Model in hpnslider.Model">
+                <partial name="_ProductBoxSlideVue" />
+            </swiper-slide>
+            <div class="swiper-pagination" slot="pagination"></div>
+            <div class="swiper-button-prev" slot="button-prev"></div>
+            <div class="swiper-button-next" slot="button-next"></div>
+            <div class="swiper-scrollbar" slot="scrollbar"></div>
+        </swiper>
+    </template>
+</div>

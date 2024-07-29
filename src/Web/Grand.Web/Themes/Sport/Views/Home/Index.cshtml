@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@inject Grand.Business.Storage.Interfaces.IPictureService pictureService
+@inject SeoSettings seoSettings
+@inject IWorkContext workContext
+@{
+    Layout = "_SingleColumn";
+
+    var supportRtl = workContext.WorkingLanguage.Rtl;
+
+    if (supportRtl)
+    {
+        <link rel="stylesheet" type="text/css" asp-priority="100" asp-src="/Themes/Sport/Content/css/home/home.rtl.css">
+    }
+    else
+    {
+        <link rel="stylesheet" type="text/css" asp-priority="100" asp-src="/Themes/Sport/Content/css/home/home.css">
+    }
+    @section head {
+        <script src="/Themes/Sport/Content/script/npslider-home.js"></script>
+        <script src="/Themes/Sport/Content/script/home.js"></script>
+    }
+}
+
+@section meta {
+    @if (seoSettings.OpenGraphMetaTags)
+    {
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="@seoSettings.DefaultTitle" />
+        <meta property="og:description" content="@Html.Encode(seoSettings.DefaultMetaDescription)" />
+        @if (!String.IsNullOrWhiteSpace(seoSettings.StorePictureId))
+        {
+            var picture = await pictureService.GetPictureUrl(seoSettings.StorePictureId);
+            <meta property="og:image" content="@picture" />
+        }
+        <meta property="og:url" content="@this.Url.ActionContext.HttpContext.Request.GetEncodedUrl()" />
+    }
+    @if (seoSettings.TwitterMetaTags)
+    {
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:site" content="@seoSettings.DefaultTitle" />
+        <meta property="twitter:title" content="@seoSettings.DefaultTitle" />
+        <meta property="twitter:description" content="@Html.Encode(seoSettings.DefaultMetaDescription)" />
+        @if (!String.IsNullOrWhiteSpace(seoSettings.StorePictureId))
+        {
+            var picture = await pictureService.GetPictureUrl(seoSettings.StorePictureId);
+            <meta property="twitter:image" content="@picture" />
+        }
+
+        <meta property="twitter:url" content="@this.Url.ActionContext.HttpContext.Request.GetEncodedUrl()" />
+    }
+}
+
+<div id="home-page" class="page home-page custom-container d-flex flex-column mt-0">
+    @await Component.InvokeAsync("PushNotificationsRegistration")
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_top" })
+    <partial name="HomePageNewProducts" />
+    @await Component.InvokeAsync("PageBlock", new { systemName = "HomePageBanner" })
+    <div class="home-page-section" data-load="more" data-isloaded="false" data-id="HomePageProducts">
+        <partial name="HomePageProducts" />
+    </div>
+     @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_brands" })
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="HomePageBrands">
+        <partial name="HomePageBrands" />
+    </div>
+    @await Component.InvokeAsync("PageBlock", new { systemName = "ParallaxBanner" })
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_best_sellers" })
+    <div data-id="HomePageBestSellers" class="home-page-section" data-load="bestsellers" data-isloaded="false">
+        <partial name="HomePageBestSellers" />
+    </div>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_products" })
+    <b-tabs class="products-tabs" content-class="products-tabs-content">
+        <div data-id="PersonalizedProducts" class="home-page-section" data-load="more" data-isloaded="false">
+            <partial name="PersonalizedProducts" />
+        </div>
+        <div data-id="CustomerRecommendedProducts" class="home-page-section" data-load="more" data-isloaded="false">
+            <partial name="CustomerRecommendedProducts" />
+        </div>
+        <div data-id="SuggestedProducts" class="home-page-section" data-load="more" data-isloaded="false">
+            <partial name="SuggestedProducts" />
+        </div>
+    </b-tabs>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_categories" })
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="HomePageCategories">
+        <partial name="HomePageCategories" />
+    </div>
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="CategoryFeaturedProducts">
+        <partial name="CategoryFeaturedProducts" />
+    </div>
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="CollectionFeaturedProducts">
+        <partial name="CollectionFeaturedProducts" />
+    </div>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_news" })
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="HomePageNews">
+        <partial name="HomePageNews" />
+    </div>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_before_blog" })
+    <div class="home-page-section" data-load="standard" data-isloaded="false" data-id="HomePageBlog">
+        <partial name="HomePageBlog" />
+    </div>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "home_page_bottom" })
+</div>

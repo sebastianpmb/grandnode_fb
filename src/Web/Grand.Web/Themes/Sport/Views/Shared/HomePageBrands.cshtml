@@ -1,0 +1,14 @@
+﻿<template v-if="hpi.HomePageItems[0].HomePageBrands.loading">
+    <b-skeleton animation="fade" height="450px"></b-skeleton>
+</template>
+<div v-else-if="hpi.HomePageItems[0].HomePageBrands.items[0] !== undefined" id="HomePageBrands">
+    <div class="brands-container">
+        <swiper data-title="HomePageBrands" ref="HomePageBrands" :options="hpi.HomePageItems[0].HomePageBrands.swiperOptions">
+            <swiper-slide v-for="Model in hpi.HomePageItems[0].HomePageBrands.items">
+                <a :href="'/' + Model.SeName">
+                    <img class="img-fluid" :src="Model.PictureModel.FullSizeImageUrl" :alt="Model.PictureModel.Title">
+                </a>
+            </swiper-slide>
+        </swiper>
+    </div>
+</div>

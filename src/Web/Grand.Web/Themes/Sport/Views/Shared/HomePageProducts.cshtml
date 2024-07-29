@@ -1,0 +1,31 @@
+﻿<template v-if="hpi.HomePageItems[0].HomePageProducts.loading">
+    <b-skeleton animation="fade" height="55px" class="mt-3 px-0"></b-skeleton>
+    <b-col cols="12" class="mt-3 px-0">
+        <div class="item-row">
+            <b-col xl="4" lg="4" md="4" sm="6" cols="6">
+                <b-skeleton-img animation="fade" height="450px"></b-skeleton-img>
+            </b-col>
+            <b-col xl="4" lg="4" md="4" sm="6" cols="6">
+                <b-skeleton-img animation="fade" height="450px"></b-skeleton-img>
+            </b-col>
+            <b-col xl="4" lg="4" md="4" sm="6" cols="6" class="d-md-block d-none">
+                <b-skeleton-img animation="fade" height="450px"></b-skeleton-img>
+            </b-col>
+        </div>
+    </b-col>
+</template>
+<div v-else-if="hpi.HomePageItems[0].HomePageProducts.items[0] !== undefined" id="HomePageProducts" class="section">
+    <div class="product-grid">
+        <h2 class="generalTitle text-center"><span>@Loc["HomePage.Products"]</span></h2>
+        <b-col cols="12" class="px-0">
+            <div class="item-row">
+                <b-col xl="3" lg="4" md="4" sm="6" cols="6" v-for="Model in hpi.HomePageItems[0].HomePageProducts.items.slice(0,hpi.HomePageItems[0].HomePageProducts.ProductsToShow)" class="col-for-5-xl product-container mb-2">
+                    <partial name="_ProductBoxVue" />
+                </b-col>
+            </div>
+            <div class="w-100 text-center" v-if="hpi.HomePageItems[0].HomePageProducts.ProductsToShow >= 4">
+                <b-button class="show-more-button" variant="outline-secondary" data-nomore="@Loc["Sport.nomore.products"]" @@click="hpi.loadMore($event, hpi.HomePageItems[0].HomePageProducts.NumberOfProducts, hpi.HomePageItems[0].HomePageProducts)">Show More</b-button>
+            </div>
+        </b-col>
+    </div>
+</div>

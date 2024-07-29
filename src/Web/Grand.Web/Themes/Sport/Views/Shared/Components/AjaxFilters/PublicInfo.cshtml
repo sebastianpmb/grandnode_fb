@@ -1,0 +1,195 @@
+﻿@model Grand.Plugin.Widgets.AjaxFilters.Models.PublicInfoModel
+@using Grand.Web.Common
+@using Grand.Web.Common.Themes
+@using Grand.Web.Common.Extensions
+@inject IThemeContext themeContext
+@inject IWorkContext workContext
+@{
+    var currentTheme = themeContext.WorkingThemeName;
+    var supportRtl = workContext.WorkingLanguage.Rtl;
+
+    @if (supportRtl)
+    {
+        <link rel="stylesheet" type="text/css" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/style.rtl.css" />
+        <link rel="stylesheet" type="text/css" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/nouislider.rtl.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" type="text/css" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/style.css" />
+        <link rel="stylesheet" type="text/css" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/nouislider.css" />
+    }
+
+    <script asp-location="Footer" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/ajaxfilter.manager.js"></script>
+    <script asp-location="Header" asp-src="/Themes/@currentTheme/Views/Shared/Components/AjaxFilters/Content/nouislider.js"></script>
+}
+@{
+    <div class="d-flex">
+        <input type="button" class="button clearAllfilters" onclick="clearAllFilters()" style="display:none;" value="@Loc["Plugin.Widgets.AjaxFilters.ClearAll"]" />
+        <input type="button" class="button closeAllFilters open" value="@Loc["Plugin.Widgets.AjaxFilters.Toggle"]" />
+    </div>
+}
+
+<form id="ajaxfilter-form" action="" v-if="catalog.Model !== null">
+    <div class="selectedOptions">
+    </div>
+    <input type="hidden" name="CategoryId" value=@(Model.CategoryId)>
+    <input type="hidden" name="ManufacturerId" value=@(Model.ManufacturerId)>
+    <input type="hidden" name="EnableManufacturersFilter" value="@(Model.EnableManufacturersFilter.ToString())">
+    <input type="hidden" name="EnableVendorsFilter" value="@(Model.EnableVendorsFilter.ToString())">
+    <input type="hidden" name="EnablePriceRangeFilter" value="@(Model.EnablePriceRangeFilter.ToString())">
+    <input type="hidden" name="EnableSpecificationsFilter" value="@(Model.EnableSpecificationsFilter.ToString())">
+    <input type="hidden" name="EnableAttributesFilter" value="@(Model.EnableAttributesFilter.ToString())">
+    <input type="hidden" name="ViewMode" id="ViewMode" value="@(Model.ViewMode)">
+    <input type="hidden" name="PageSize" id="PageSize" v-model="catalog.Model.PagingFilteringContext.PageSize">
+    <input type="hidden" name="SortOption" id="SortOption" v-model="catalog.Model.PagingFilteringContext.OrderBy">
+    <input type="hidden" name="PageNumber" id="PageNumber" v-model="catalog.Model.PagingFilteringContext.PageNumber - 1">
+    <input type="hidden" name="Count" id="Count" value="@(Model.Count)">
+    <div class="ajax-filter-section">
+        @{
+            if (Model.EnablePriceRangeFilter)
+            {
+                @Html.Partial("FilterPriceRange.cshtml", Model.filterPriceModel);
+            }
+            if (Model.EnableManufacturersFilter)
+            {
+                @Html.Partial("FilterManufacturers.cshtml", Model.manufacturerModel);
+            }
+            if (Model.EnableSpecificationsFilter)
+            {
+                @Html.Partial("FilterSpecifications.cshtml", Model.specyficationModel);
+            }
+
+            if (Model.EnableVendorsFilter)
+            {
+                @Html.Partial("FilterVendors.cshtml", Model.vendorsModel);
+            }
+
+            if (Model.EnableAttributesFilter)
+            {
+                @Html.Partial("FilterAttributes.cshtml", Model.attributesModel);
+            }
+        }
+    </div>
+</form>
+
+<div id="AjaxProducts">
+    @Html.Partial("_Selectors.cshtml")
+    <template v-if="catalog.AjaxProducts !== null">
+        <b-overlay :show="catalogAxios.loading" rounded="sm">
+            <div id="products-container">
+                <template v-if="catalog.Model.PagingFilteringContext.ViewMode == 'grid'">
+                    <b-col cols="12" class="product-grid px-0">
+                        <div class="item-row">
+                            <template v-for="Model in catalog.AjaxProducts.Data.AjaxProductsModel.Products">
+                                <b-col xl="3" lg="3" sm="6" cols="6" class="product-container col-for-5-xl mb-2">
+                                    <partial name="_ProductBoxVue" />
+                                </b-col>
+                            </template>
+                        </div>
+                    </b-col>
+                </template>
+                <template v-else>
+                    <div class="product-list">
+                        <b-col cols="12">
+                            <b-row>
+                                <template v-for="Model in catalog.AjaxProducts.Data.AjaxProductsModel.Products">
+                                    <partial name="_ProductBoxListVue" />
+                                </template>
+                            </b-row>
+                        </b-col>
+                    </div>
+                </template>
+                <div id="vue-pager" class="vue-pager" v-if="catalog.AjaxProducts.pager !== null">
+                    <template v-if="catalog.AjaxProducts.Data.AjaxProductsModel.Count > catalog.AjaxProducts.Data.PageSize">
+                        <div v-if="catalog.AjaxProducts.Data.PageNumber > 0" @@click="catalogAxios.first" class="first">@Loc["pager.first"]</div>
+                        <div v-if="catalog.AjaxProducts.Data.PageNumber > 0" @@click="catalogAxios.prev" class="prev">@Loc["pager.previous"]</div>
+                        <template v-for="page in catalog.AjaxProducts.pager">
+                            <template v-if="((page - catalog.AjaxProducts.Data.PageNumber) < 3 && (page - catalog.AjaxProducts.Data.PageNumber) > -3)">
+                                <div @@click="catalogAxios.paging" :data-href="page" :class="{current: (page == catalog.AjaxProducts.Data.PageNumber)}" v-html="page + 1"></div>
+                            </template>
+                        </template>
+                        <div v-if="catalog.AjaxProducts.pager[catalog.AjaxProducts.pager.length - 1] > catalog.AjaxProducts.Data.PageNumber" @@click="catalogAxios.next" class="next">@Loc["pager.next"]</div>
+                        <div v-if="catalog.AjaxProducts.pager[catalog.AjaxProducts.pager.length - 1] > catalog.AjaxProducts.Data.PageNumber" @@click="catalogAxios.last" class="last">@Loc["pager.last"]</div>
+                    </template>
+                </div>
+            </div>
+        </b-overlay>
+    </template>
+    <template v-if="catalog.AjaxProducts !== null">
+        <template v-if="catalog.AjaxProducts.Data.AjaxProductsModel.Products.length == 0">
+            <b-alert variant="info" show class="my-3">
+                @Loc["search.noresultstext"]
+            </b-alert>
+        </template>
+    </template>
+</div>
+<script asp-location="Header">
+    var catalogAxios = new Vue({
+        data: function () {
+            return {
+                loading: true,
+            }
+        },
+        methods: {
+            paging(e) {
+                var pageNumber = e.target.getAttribute("data-href");
+                document.getElementById("PageNumber").value = pageNumber;
+                AjaxFilter.setFilter('pagenumber');
+            },
+            next() {
+                var currentPage = catalog.AjaxProducts.Data.PageNumber;
+                var my_array = catalog.AjaxProducts.pager;
+                var last_element = my_array[my_array.length - 1];
+                if (last_element > currentPage) {
+                    document.getElementById("PageNumber").value = currentPage + 1;
+                    AjaxFilter.setFilter('pagenumber');
+                }
+            },
+            prev() {
+                var currentPage = catalog.AjaxProducts.Data.PageNumber;
+                var my_array = catalog.AjaxProducts.pager;
+                var first_element = my_array[0];
+                if (currentPage > first_element) {
+                    document.getElementById("PageNumber").value = currentPage - 1;
+                    AjaxFilter.setFilter('pagenumber');
+                }
+            },
+            first() {
+                var my_array = catalog.AjaxProducts.pager;
+                var first_element = my_array[0];
+                document.getElementById("PageNumber").value = first_element;
+                AjaxFilter.setFilter('pagenumber');
+            },
+            last() {
+                var my_array = catalog.AjaxProducts.pager;
+                var last_element = my_array[my_array.length - 1];
+                document.getElementById("PageNumber").value = last_element;
+                AjaxFilter.setFilter('pagenumber');
+            },
+            setPageSize(select) {
+                var value = select.options[select.selectedIndex].text;
+                var pageSize = document.getElementById("PageSize");
+                pageSize.value = value;
+
+                AjaxFilter.setFilter('pagesize');
+            },
+            setSortOption(select) {
+                var value = select.value.replace(/.*\D/g, "");
+                var SortOption = document.getElementById("SortOption");
+                SortOption.value = value;
+
+                AjaxFilter.setFilter('orderby');
+            }
+        }
+    })
+</script>
+
+<script asp-location="Footer">
+    document.addEventListener("DOMContentLoaded", function () {
+        if (document.getElementById("AjaxProducts")) {
+            document.getElementById("catalog-products").remove();
+        }
+        AjaxFilter.init('@Url.RouteUrl("Plugins.Widgets.AjaxFilters.ReloadFilters")', '@(Context.Request.QueryString.HasValue ? Context.Request.QueryString.ToString() : "" )', '@(Context.Request.Path)');
+        AjaxFilter.setFilter('update');
+    });
+</script>

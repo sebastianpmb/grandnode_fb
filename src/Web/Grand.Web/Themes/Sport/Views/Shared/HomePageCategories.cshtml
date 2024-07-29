@@ -1,0 +1,21 @@
+﻿<template v-if="hpi.HomePageItems[0].HomePageCategories.loading">
+    <b-skeleton animation="fade" height="450px"></b-skeleton>
+</template>
+<div v-else-if="hpi.HomePageItems[0].HomePageCategories.items[0] !== undefined" id="HomePageCategories">
+    <div class="section my-3">
+        <b-col cols="12" class="px-0">
+            <swiper ref="HomePageCategories" :options="hpi.HomePageItems[0].HomePageCategories.swiperOptions">
+                <template v-for="Model in hpi.HomePageItems[0].HomePageCategories.items">
+                    <swiper-slide>
+                        <b-link class="category-item brand draw meet" :href="'/' + Model.SeName">
+                            <img :src="Model.PictureModel.FullSizeImageUrl" :alt="Model.PictureModel.Title" class="img-fluid gallery-img" />
+                            <div class="content">
+                                <h6 class="title mb-0">{{Model.Name}}</h6>
+                            </div>
+                        </b-link>
+                    </swiper-slide>
+                </template> 
+            </swiper>
+        </b-col>
+    </div>
+</div>

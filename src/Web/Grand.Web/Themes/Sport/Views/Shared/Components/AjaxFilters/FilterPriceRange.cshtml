@@ -1,0 +1,107 @@
+﻿@model Grand.Plugin.Widgets.AjaxFilters.Models.FilterPriceRangeModel
+@inject IWorkContext workContext
+<div id="price-filter-section">
+    @{
+        var minPrice = Model.MinPrice.ToString("F0");
+        var maxPrice = Model.MaxPrice.ToString("F0");
+
+        var currentMinPrice = Model.CurrentMinPrice.ToString("F0");
+        var currentMaxPrice = Model.CurrentMaxPrice.ToString("F0");
+
+        <script asp-location="Footer">
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("price-current-min").value = @(currentMinPrice);
+                document.getElementById("price-current-max").value = @(currentMaxPrice);
+
+                document.getElementById("price-range-min-value").innerText = @(currentMinPrice);
+                document.getElementById("price-range-max-value").innerText = @(currentMaxPrice);
+
+
+                document.querySelector('.ajaxfilter-clear-price').addEventListener('click', function (e) {
+
+                    document.getElementById("price-current-min").value = @(minPrice);
+                    document.getElementById("price-current-max").value = @(maxPrice);
+
+                    AjaxFilter.setFilter('p');
+                    resetFiltersOnPrice();
+                });
+
+                var nonLinearSlider = document.getElementById('nonlinear');
+
+                noUiSlider.create(nonLinearSlider, {
+                    connect: true,
+                    behaviour: 'drag',
+                    step: 1,
+                    direction: 'rtl',
+                    start: [@(currentMinPrice), @(currentMaxPrice)],
+                range: {
+                    'min': [@(minPrice)],
+                    'max': [@(maxPrice)]
+                }
+            });
+            nonLinearSlider.noUiSlider.on('change', function (values, handle, unencoded, isTap, positions) {
+                var currentMin = Math.trunc(values[0]);
+                var currentMax = Math.trunc(values[1]);
+
+                document.getElementById("price-current-min").value = currentMin;
+                document.getElementById("price-current-max").value = currentMax;
+
+                document.getElementById("price-range-min-value").innerText = currentMin;
+                document.getElementById("price-range-max-value").innerText = currentMax;
+
+                if (@(minPrice) == currentMin && @(maxPrice) == currentMax)
+            {
+                resetFiltersOnPrice();
+            }
+                else {
+                document.querySelector(".clearAllfilters").style.display = "block";
+            }
+            AjaxFilter.setFilter('p');
+            });
+            });
+
+
+        </script>
+        <div class="filter-section">
+            <div class="title">
+                <span class="ajaxfilter-title" style="float:left">@Loc["Plugin.Widgets.AjaxFilters.Filter.FilterByPrice"]</span>
+                <span class="arrowHold"></span>
+            </div>
+
+            <div class="clear"></div>
+            <div class="ajaxfilter-section">
+                <div id="nonlinear"></div>
+                <input type="hidden" value="@Model.CurrencySymbol" id="currency-symbol" name="filterPriceModel][CurrencySymbol" />
+                <div class="ajaxfilter-price-range-section">
+                    <div class="price-min" style="float: left">
+                        <span class="price-range-min range-label">@string.Concat(Model.CurrencySymbol)</span>
+                        <span id="price-range-min-value" class="range-value"></span>
+                    </div>
+                    <div class="price-max" style="float: right">
+                        <span class="price-range-max range-label">@string.Concat(Model.CurrencySymbol)</span>
+                        <span id="price-range-max-value" class="range-value"></span>
+                    </div>
+                </div>
+
+                <div class="ajaxfilter-price-section">
+                    <div class="ajaxfilter-price-section">
+                        <input type="hidden" value="@minPrice"
+                               readonly id="price-current-min" name="filterPriceModel][CurrentMinPrice" />
+                        <input type="hidden" value="@maxPrice"
+                               readonly id="price-current-max" name="filterPriceModel][CurrentMaxPrice" />
+                        <input type="hidden" value="@minPrice" id="min-price" name="filterPriceModel][MinPrice" />
+                        <input type="hidden" value="@maxPrice" id="max-price" name="filterPriceModel][MaxPrice" />
+                    </div>
+
+                    <div class="clearHolder ajaxfilter-clear-price">
+                        <a>@Loc["Plugin.Widgets.AjaxFilters.Filter.ClearAll"]</a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    }
+
+</div>

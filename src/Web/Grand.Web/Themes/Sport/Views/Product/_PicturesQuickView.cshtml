@@ -1,0 +1,21 @@
+﻿@model ProductDetailsModel
+<b-col xl="7" lg="6" md="5" cols="12" class="px-0">
+    <div class="gallery">
+        <template>
+            <div id="ppsliderQV" class="gallery-slider">
+                <template>
+                    <swiper class="swiper gallery-top" :options="qv.swiperOptionTop" ref="swiperTopQV">
+                        @foreach (var picture in Model.PictureModels)
+                        {
+                            <swiper-slide>
+                                <img class="img-fluid" src="@picture.ImageUrl" data-srcs="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+                            </swiper-slide>
+                        }
+                        <div class="swiper-button-next swiper-button-white" slot="button-next"></div>
+                        <div class="swiper-button-prev swiper-button-white" slot="button-prev"></div>
+                    </swiper>
+                </template>
+            </div>
+        </template>
+    </div>
+</b-col>

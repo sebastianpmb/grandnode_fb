@@ -1,0 +1,126 @@
+﻿@inject Grand.Infrastructure.Configuration.AppConfig config
+
+@inject IWorkContext workContext
+@inject Grand.Business.Common.Interfaces.Directory.IGroupService  groupService
+@inject Grand.Business.Common.Interfaces.Security.IPermissionService permissionService
+@{
+    var cGroup = await groupService.GetCustomerGroupBySystemName("Administrators");
+    var supportRtl = workContext.WorkingLanguage.Rtl;
+}
+
+<!DOCTYPE html>
+<html use-lang="true">
+<head>
+    <title asp-default-title="true"></title>
+    <meta charset="utf-8">
+    <meta-description>
+        <meta-keywords>
+            <meta name="generator" content="grandnode">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+            @RenderSection("meta", required: false)
+            <head-custom>
+                <partial name="Head" />
+                <vc:widget widget-zone="head_html_tag" additional-data="null"></vc:widget>
+                <canonical-urls>
+                    @*Favicon - upload favicon.ico file to the wwwroot directory*@
+                    <partial name="_Favicons" />
+                    @if (config.DisplayMiniProfilerInPublicStore)
+                    {
+                        <mini-profiler />
+                    }
+                    <resources asp-type="HeadLink" />
+                    <resources asp-type="HeadScript" />
+                    @RenderSection("head", required: false)
+</head>
+<body>
+    <resources asp-type="ScriptHeader" />
+    @await Component.InvokeAsync("Widget", new { widgetZone = "body_start_html_tag_after" })
+
+    <div id="app" v-cloak>
+        <partial name="_ColorPickerStyle"></partial>
+        @if (cGroup.UserFields.FirstOrDefault(x => x.Key == "storeSelector")?.Value == "true")
+        {
+            <div class="store-selector-container" ref="storeSelector">
+                <div class="inside-container">
+                    <partial name="_Selector_Store" />
+                    <div class="close-add" @@click="vm.$refs.storeSelector.classList.add('hide')">
+                        <span class="text">@Loc["close.add"]</span>
+                        <span class="icon"></span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="preloader-container">
+            <div class="preloader"></div>
+        </div>
+        <partial name="_Notifications" />
+        <vc:get-coordinate></vc:get-coordinate>
+        <b-container fluid class="main-container">
+            @await Component.InvokeAsync("Widget", new { widgetZone = "content_before" })
+            <div class="row">
+                <div class="col-12">
+                    <div id="header-nav-container" class="header-nav-container">
+                        <swiper class="swiper-info" ref="topHeaderInfo" :options="topHeaderInfo.swiperOptions">
+                            @await Component.InvokeAsync("PageBlock", new { systemName = "topHeaderInfo_Sport" })
+                        </swiper>
+                        <div class="header-bottom">
+                            <div id="menu-toggler" class="menu-toggler d-lg-none d-flex" onclick="openMenu(this, 'mainMenu')">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="d-inline-flex align-items-center justify-content-start w-100">
+                                <partial name="_Logo" />
+                                <ul class="Menu -vertical" id="mainMenu">
+                                    @await Component.InvokeAsync("Menu")
+                                </ul>
+                                <partial name="Header" />
+                            </div>
+                        </div>
+                    </div>
+                    @* color picker*@
+
+                    <div class="picker-container">
+                        @if (cGroup.UserFields.FirstOrDefault(x => x.Key == "showPicker")?.Value == "true")
+                        {
+                            <div class="toggle-button " v-bind:style="{ backgroundColor: picker.color }" @@click="picker.toggleChange">
+                                <span class="icons icon-pencil"></span>
+                            </div>
+                        }
+                        <div id="color-picker" class="c-picker" v-bind:class="{hide: picker.toggle}">
+                            <color-picker :width=300 :height=300 v-model="picker.color" @@color-change="picker.hexToRgbA(picker.color)">
+                            </color-picker>
+                            <div class="content">
+                                <input v-model="picker.color" type="text">
+                                <div class="buttons">
+                                    <a class="accept-button" @@click="picker.setColor(picker.color)">
+                                        @Loc["froggy.picker.set"]
+                                    </a>
+                                    <div class="circle" v-bind:style="{ backgroundColor: picker.color }">
+                                        <span class="icons icon-check"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*end color picker*@
+
+                    @if (IsSectionDefined("Breadcrumb"))
+                    {
+                        @RenderSection("Breadcrumb")
+                    }
+                    @RenderBody()
+                </div>
+            </div>
+            @await Component.InvokeAsync("Widget", new { widgetZone = "content_after" })
+        </b-container>
+        @await Component.InvokeAsync("Footer")
+        <partial name="_Cookie" />
+        <div id="backdrop-menu" class="backdrop-menu"></div>
+    </div>
+    @await Component.InvokeAsync("Widget", new { widgetZone = "body_end_html_tag_before" })
+    <resources asp-type="ScriptFooter" />
+</body>
+</html>

@@ -1,0 +1,27 @@
+﻿@using Grand.Infrastructure
+@using Grand.Web.Common.Page
+@using Grand.Web.Common.Themes
+@model Widgets.Slider.Models.PublicInfoModel
+@inject IWorkContext workContext
+@inject IPageHeadBuilder pagebuilder
+@inject IThemeContext themeContext
+
+<link rel="stylesheet" type="text/css" asp-src="/Plugins/Widgets.Slider/Assets/vue-style.css" />
+
+<b-carousel id="GrandCarousel"
+            fade
+            controls
+            indicators
+            :interval="5000">
+    @foreach (var item in Model.Slide)
+    {
+        if (string.IsNullOrEmpty(item.PictureUrl))
+        {
+            <b-carousel-slide class="no-img" caption-tag="div" caption-html="@item.Description" @if (item.FullWidth) { <text> data-width="full" </text> } @if (!string.IsNullOrEmpty(item.Link)) { <text> class="link" onclick="window.location='@item.Link'" </text> }></b-carousel-slide>
+        }
+        else
+        {
+            <b-carousel-slide img-src="@item.PictureUrl" img-alt="@item.Name" caption-tag="div" caption-html="@item.Description" @if (item.FullWidth) { <text> data-width="full" </text> } @if (!string.IsNullOrEmpty(item.Link)) { <text> class="link" onclick="window.location='@item.Link'" </text> }></b-carousel-slide>
+        }
+    }
+</b-carousel>

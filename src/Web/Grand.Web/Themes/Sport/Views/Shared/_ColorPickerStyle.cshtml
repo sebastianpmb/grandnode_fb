@@ -1,0 +1,39 @@
+﻿@inject IWorkContext workContext
+@inject Grand.Business.Common.Interfaces.Directory.IGroupService  groupService
+@inject Grand.Business.Common.Interfaces.Security.IPermissionService permissionService
+@{
+    var cGroup = await groupService.GetCustomerGroupBySystemName("Administrators");
+
+}
+
+@if (cGroup.UserFields.FirstOrDefault(x => x.Key == "usePicker")?.Value == "true") { 
+        <text>
+            <v-style>
+                .generalLeftSide li.active.last > a, .opc-header .card-header .btn-info.not-collapsed, .shopping-cart.table .product-unit-price, .shopping-cart .prod-total, button.close:hover, .sidebar-cart .item .col a, .product-details-page .nav-tabs .nav-link.active, .product-details-page .overview .actual-price, .footer a:hover, .footer ul.social-icons li .icons:hover, .post-news .date, a, a:hover, .Menu li > a:hover, .Menu li > ul.gallery > li.-hasSubmenu > a:hover, .Menu li.-hasSubmenu .next-level > li > a:hover, .Menu li.-hasSubmenu > ul.gallery > li > a:hover, .product-box-slide .prices .actual-price, .text-gold {
+                color: rgb({{picker.colorStyle}});
+                }
+                .bestsellers .swiper-container::before {
+                color: rgba({{picker.colorStyle}}, .3);
+                }
+                .viewmode-icon:hover .grid-icon span::before, .viewmode-icon:hover .grid-icon span::after, .viewmode-icon:hover .list-icon span, .opc-totals .qty-opc, .product-details-page .nav-tabs .nav-link.active::before, .up-btn, .left-side-toggler .inner span, .viewmode-icon.selected .grid-icon span::before, .viewmode-icon.selected .grid-icon span::after, .viewmode-icon.selected .list-icon span, .product-box-slide .sale-label span, .product-box .sale-label span, .product-details-page .product-label span, .qty-indicator, .swiper-pagination-bullet-active {
+                background: rgb({{picker.colorStyle}});
+                }
+                .bg-teal, .product-box .other-buttons .btn.btn-outline-secondary, .products-tabs .nav-tabs .nav-link::after, .custom-control-input:checked ~ .custom-control-label::before, .sidebar-cart .cart-button.btn-secondary:hover, .product-details-page .add-to-cart-button.btn-info, .vue-pager div.current, .product-box .other-buttons .btn.btn-outline-secondary:hover, .product-box .add-to-cart-button.btn.btn-outline-secondary, .product-box-slide .button .add-to-cart-button.btn.btn-outline-secondary, .swiper-button-next:hover:after, .swiper-button-prev:hover:after {
+                background-color: rgb({{picker.colorStyle}});
+                }
+                a.left-side-toggler:active, a.left-side-toggler:focus, a.left-side-toggler:hover, .opc-totals, .checkout-page .col-more .order-summary-content .cart-footer, .btn-secondary:hover, .btn-secondary.focus, .btn-secondary:focus, .btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle, .custom-control-input:checked ~ .custom-control-label::before, .shopping-cart-page .totals-inner, .b-toast-info.toast, .b-toast-info .toast .toast-header, .zoom-button:hover, .sidebar-cart .cart-button.btn-secondary, .product-details-page .add-to-cart-button.btn-info, .vue-pager div.current, .product-box .other-buttons .btn.btn-outline-secondary:hover, .product-box .add-to-cart-button.btn.btn-outline-secondary, .product-box-slide .attr-container tr td .btn-light.btn:hover, .product-box-slide .button .add-to-cart-button.btn.btn-outline-secondary {
+                border-color: rgb({{picker.colorStyle}});
+                }
+                .main-slider {
+                background: rgba({{picker.colorStyle}}, .2);
+                }
+                .product-box-slide .picture-outer .hover-img {
+                background-color: transparent;
+                }
+                .product-box .sale-label span::after, .product-box .flag-label span::after, .product-details-page .product-label span::after {
+                border-left: 14px solid rgb({{picker.colorStyle}});
+                border-right: 14px solid rgb({{picker.colorStyle}});
+                }
+            </v-style>
+        </text>
+}

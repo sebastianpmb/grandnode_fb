@@ -1,0 +1,49 @@
+﻿<template v-if="hpi.HomePageItems[0].HomePageBlog.loading">
+    <div class="mt-3 container-fluid">
+        <div class="item-row">
+            <b-col xl="4" lg="4" md="6" sm="6" cols="12">
+                <b-skeleton-img animation="fade" height="500px"></b-skeleton-img>
+            </b-col>
+            <b-col xl="4" lg="4" md="6" sm="6" cols="12" class="d-sm-block d-none">
+                <b-skeleton-img animation="fade" height="500px"></b-skeleton-img>
+            </b-col>
+            <b-col xl="4" lg="4" md="6" sm="6" cols="12" class="d-lg-block d-none">
+                <b-skeleton-img animation="fade" height="500px"></b-skeleton-img>
+            </b-col>
+        </div>
+    </div>
+</template>
+<div v-else-if="hpi.HomePageItems[0].HomePageBlog.items.Items !== undefined" id="HomePageBlog" class="section">
+    <div class="container-fluid">
+        <h2 class="generalTitle text-center"><span>@Loc["Blog.Latest"]</span></h2>
+        <swiper ref="HomePageBlog" :options="hpi.HomePageItems[0].HomePageBlog.swiperOptions" class="swiper-standard">
+            <swiper-slide v-for="Item in hpi.HomePageItems[0].HomePageBlog.items.Items">
+                <div class="blog-post" @@click="window.location.href = '' + Item.SeName + ''">
+                    <a>
+                        <template>
+                            <img class="swiper-lazy" :data-src="Item.PictureModel.ImageUrl" :alt="Item.PictureModel.AlternateText" />
+                            <div class="preloader swiper-lazy-preloader"></div>
+                        </template>
+                        <span v-if="Item.Category !== null" class="category">{{Item.Category}}</span>
+                        <div class="content">
+                            <h3 class="title">
+                                {{Item.Title}}
+                            </h3>
+                            <div class="date">
+                                <div class="day part" v-html="new Date(Item.CreatedOn).getUTCDate()"></div>
+                                <div class="month part" v-html="new Date(Item.CreatedOn).toLocaleString('default', { month: 'long' })"></div>
+                                <div class="year part" v-html="new Date(Item.CreatedOn).getUTCFullYear()"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </swiper-slide>
+            <div class="swiper-pagination" slot="pagination"></div>
+            <div class="swiper-button-prev" slot="button-prev"></div>
+            <div class="swiper-button-next" slot="button-next"></div>
+        </swiper>
+        <div class="view-all text-center mt-3">
+            <a class="btn btn-outline-secondary" href="@Url.RouteUrl("Blog")">@Loc["Blog.ViewAll"]</a>
+        </div>
+    </div>
+</div>
